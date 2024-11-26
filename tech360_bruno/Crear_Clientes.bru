@@ -1,0 +1,23 @@
+meta {
+  name: Crear_Clientes
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/api/clientes
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "nombreCliente": "Juan",
+      "apellidoCliente": "Pérez",
+      "direccion": "Calle Falsa 123",
+      "cedula": "123456789",
+      "correo": "juan.perez@example.com",
+      "celular": "987654321"
+  }
+  
+}

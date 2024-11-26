@@ -1,0 +1,424 @@
+CREATE DATABASE telastech360;
+USE telastech360;
+
+/* TABLAS SIN FK */
+
+CREATE TABLE proveedor (
+    id_proveedor INT ,
+    nombre_proveedor VARCHAR(100),
+    apellido_proveedor VARCHAR(100),
+    direccion VARCHAR(200),
+    correo VARCHAR(100),
+    celular VARCHAR(20),
+    CONSTRAINT pk_id_proveedor PRIMARY KEY (id_proveedor)
+);
+
+CREATE TABLE gerente (
+    id_gerente INT ,
+    nombre_gerente VARCHAR(100),
+    apellido_gerente VARCHAR(100),
+    cedula VARCHAR(20),
+    correo VARCHAR(100),
+    CONSTRAINT pk_id_gerente PRIMARY KEY (id_gerente)
+);
+
+CREATE TABLE operario (
+    id_operario INT ,
+    nombre_operario VARCHAR(100),
+    apellido_operario VARCHAR(100),
+    cedula VARCHAR(20),
+    correo VARCHAR(100),
+    celular VARCHAR(20),
+    CONSTRAINT pk_id_operario PRIMARY KEY (id_operario)
+);
+
+CREATE TABLE cliente (
+    id_cliente INT ,
+    nombre_cliente VARCHAR(100),
+    apellido_cliente VARCHAR(100),
+    direccion VARCHAR(200),
+    cedula VARCHAR(20),
+    correo VARCHAR(100),
+    celular VARCHAR(20),
+    CONSTRAINT pk_id_cliente PRIMARY KEY (id_cliente)
+);
+
+CREATE TABLE maquina (
+    id_maquina INT ,
+    nombre_maquina VARCHAR(100), 
+    tipo_maquina VARCHAR(100),
+    CONSTRAINT pk_id_maquina PRIMARY KEY (id_maquina)
+);
+
+CREATE TABLE producto (
+    id_producto INT ,
+    nombre_producto VARCHAR(50),
+    CONSTRAINT pk_id_producto PRIMARY KEY (id_producto)
+);
+
+CREATE TABLE variante_producto (
+    id_variante INT,
+    id_producto INT,
+    talla INT,
+    color VARCHAR(50),
+    cantidad INT,
+    CONSTRAINT pk_id_variante PRIMARY KEY (id_variante),
+    CONSTRAINT fk_id_producto_var FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+/* TABLAS CON FK */
+
+CREATE TABLE materia_prima (
+    id_materia_prima INT ,
+    color VARCHAR(60),
+    material VARCHAR(100),
+    cantidad INT,
+    id_proveedor INT,
+    CONSTRAINT pk_id_materia_prima PRIMARY KEY (id_materia_prima),
+    CONSTRAINT fk_id_proveedor FOREIGN KEY (id_proveedor) REFERENCES proveedor(id_proveedor)
+);
+
+CREATE TABLE produccion (
+    id_produccion INT ,
+    fechaInicio DATE,
+    fechaFin DATE,
+    id_operario INT,
+    id_maquina INT,
+    id_producto INT,
+    estado_produccion VARCHAR(50),  -- Campo para estado de producción
+    CONSTRAINT pk_id_produccion PRIMARY KEY (id_produccion),
+    CONSTRAINT fk_id_operario FOREIGN KEY (id_operario) REFERENCES operario(id_operario),
+    CONSTRAINT fk_id_maquina FOREIGN KEY (id_maquina) REFERENCES maquina(id_maquina),
+    CONSTRAINT fk_id_producto_prod FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+CREATE TABLE inventario (
+    id_inventario INT ,
+    cantidad INT,
+    ubicacion VARCHAR(100),
+    id_variante INT,
+    CONSTRAINT pk_id_inventario PRIMARY KEY (id_inventario),
+    CONSTRAINT fk_id_variante_inv FOREIGN KEY (id_variante) REFERENCES variante_producto(id_variante)
+);
+
+CREATE TABLE pedido (
+    id_pedido INT ,
+    direccion_pedido VARCHAR(200),
+    fecha DATE,
+    estado_pedido VARCHAR(50),  -- Campo para estado del pedido
+    id_cliente INT,
+    CONSTRAINT pk_id_pedido PRIMARY KEY (id_pedido),
+    CONSTRAINT fk_id_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+CREATE TABLE detalle_pedido (
+    id_detalle_pedido INT,
+    id_pedido INT,
+    id_variante INT,
+    cantidad INT,
+    CONSTRAINT pk_id_detalle_pedido PRIMARY KEY (id_detalle_pedido),
+    CONSTRAINT fk_id_pedido_det FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    CONSTRAINT fk_id_variante_det FOREIGN KEY (id_variante) REFERENCES variante_producto(id_variante)
+);
+
+CREATE TABLE factura (
+    id_factura INT,
+    forma_pago VARCHAR(50),
+    valor INT,
+    id_pedido INT,
+    CONSTRAINT pk_id_factura PRIMARY KEY (id_factura),
+    CONSTRAINT fk_id_pedido_fact FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido)
+);
+
+CREATE TABLE orden_compra (
+    id_orden_compra INT ,
+    cantidad INT,
+    id_gerente INT,
+    id_materia_prima INT,
+    CONSTRAINT pk_id_orden_compra PRIMARY KEY (id_orden_compra),
+    CONSTRAINT fk_id_gerente_ord FOREIGN KEY (id_gerente) REFERENCES gerente(id_gerente),
+    CONSTRAINT fk_id_materia_prima_ord FOREIGN KEY (id_materia_prima) REFERENCES materia_prima(id_materia_prima)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+c) Java + Spring Boot
+Ideal para: Empresas o proyectos que requieren un enfoque empresarial con alta escalabilidad y robustez.
+Ventajas:
+Spring Boot es un framework de Java que permite crear aplicaciones Java de producción rápida con configuración mínima.
+Soporte para aplicaciones de microservicios y servicios escalables.
+Muy adecuado para aplicaciones de alto rendimiento, alto volumen de tráfico y transacciones complejas.
+Spring Data JPA hace que la interacción con bases de datos sea simple.
+Fuerte soporte para seguridad y autenticación (Spring Security).
+Escalabilidad: Muy buena, especialmente en sistemas distribuidos y microservicios.
+Recomendado para: Aplicaciones empresariales, sistemas con arquitectura de microservicios y proyectos que requieren alta estabilidad.
+Ejemplo de stack:
+
+Backend: Java + Spring Boot
+Base de datos: MySQL (con Spring Data JPA)
+Autenticación: Spring Security + JWT
+Despliegue: Docker, Kubernetes queiro hacer mi back end de mi base de datos con esta estructura necesito que me ayudes a hacer todo paso a paso porfavor 
+ChatGPT dijo:
+ChatGPT
+Memoria actualizada
+¡Claro! Vamos a construir tu backend paso a paso con Java + Spring Boot. Aquí tienes una guía inicial para comenzar:
+
+1. Configuración del Entorno
+a. Instalar Java y Maven
+Asegúrate de tener Java 17 (o la última versión LTS) instalado. Verifica con:
+bash
+Copiar código
+java -version
+Instala Maven para gestionar las dependencias.
+b. Configurar MySQL
+Asegúrate de que MySQL esté instalado y corriendo.
+Crea una base de datos llamada telastech360:
+sql
+Copiar código
+CREATE DATABASE telastech360;
+c. Configurar IDE
+Descarga e instala un IDE como IntelliJ IDEA o Eclipse.
+2. Crear Proyecto Spring Boot
+Usa el generador de proyectos Spring Boot Spring Initializr:
+
+Configuración básica:
+Project: Maven
+Language: Java
+Spring Boot Version: 3.x (la más reciente)
+Dependencias:
+Spring Web
+Spring Data JPA
+MySQL Driver
+Spring Security
+Spring Boot DevTools (opcional)
+Descarga el proyecto y ábrelo en tu IDE.
+3. Configurar application.properties
+En el archivo src/main/resources/application.properties, añade:
+
+properties
+Copiar código
+# Configuración de MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/telastech360
+spring.datasource.username=tu_usuario
+spring.datasource.password=tu_contraseña
+
+# Configuración de JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# Puerto del servidor
+server.port=8080
+4. Crear Entidades JPA
+Por cada tabla de tu base de datos, crearemos una clase @Entity. Ejemplo para proveedor:
+
+java
+Copiar código
+package com.telastech360.model;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Proveedor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idProveedor;
+
+    private String nombreProveedor;
+    private String apellidoProveedor;
+    private String direccion;
+    private String correo;
+    private String celular;
+
+    // Getters y setters
+}
+Crea clases similares para las demás tablas.
+
+5. Crear Repositorios
+Define interfaces para interactuar con la base de datos. Ejemplo:
+
+java
+Copiar código
+package com.telastech360.repository;
+
+import com.telastech360.model.Proveedor;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProveedorRepository extends JpaRepository<Proveedor, Integer> {
+}
+6. Crear Servicios
+Crea servicios para manejar la lógica empresarial. Ejemplo para Proveedor:
+
+java
+Copiar código
+package com.telastech360.service;
+
+import com.telastech360.model.Proveedor;
+import com.telastech360.repository.ProveedorRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ProveedorService {
+    private final ProveedorRepository proveedorRepository;
+
+    public ProveedorService(ProveedorRepository proveedorRepository) {
+        this.proveedorRepository = proveedorRepository;
+    }
+
+    public List<Proveedor> listarProveedores() {
+        return proveedorRepository.findAll();
+    }
+
+    public Proveedor guardarProveedor(Proveedor proveedor) {
+        return proveedorRepository.save(proveedor);
+    }
+
+    // Métodos adicionales...
+}
+7. Crear Controladores
+Define endpoints RESTful. Ejemplo:
+
+java
+Copiar código
+package com.telastech360.controller;
+
+import com.telastech360.model.Proveedor;
+import com.telastech360.service.ProveedorService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/proveedores")
+public class ProveedorController {
+    private final ProveedorService proveedorService;
+
+    public ProveedorController(ProveedorService proveedorService) {
+        this.proveedorService = proveedorService;
+    }
+
+    @GetMapping
+    public List<Proveedor> obtenerProveedores() {
+        return proveedorService.listarProveedores();
+    }
+
+    @PostMapping
+    public Proveedor agregarProveedor(@RequestBody Proveedor proveedor) {
+        return proveedorService.guardarProveedor(proveedor);
+    }
+}
+8. Configurar Seguridad con JWT
+Añade la dependencia de JWT en pom.xml:
+
+xml
+Copiar código
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+</dependency>
+Configura Spring Security con autenticación JWT. Si necesitas una implementación detallada, avísame.
+
+9. Pruebas y Despliegue
+a. Pruebas
+Usa Postman o cURL para probar los endpoints.
+
+b. Empaquetar y Desplegar
+Empaqueta tu aplicación:
+bash
+Copiar código
+mvn package
+Crea un contenedor Docker para tu aplicación y despliega en Kubernetes.
+Puedo ayudarte a desarrollar cada parte en detalle. ¿Por dónde quieres comenzar?
+
+
+
+
+
+
+Dijiste:
+como quedaria la estructura de las carpetas 
+ChatGPT dijo:
+ChatGPT
+La estructura de carpetas para un proyecto Spring Boot bien organizado sigue una arquitectura estándar basada en paquetes. Aquí tienes una propuesta adaptada para tu proyecto "telastech360":
+
+bash
+Copiar código
+telastech360/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── telastech360/
+│   │   │           ├── controller/         # Controladores (REST API)
+│   │   │           │   └── ProveedorController.java
+│   │   │           ├── model/              # Entidades JPA
+│   │   │           │   └── Proveedor.java
+│   │   │           ├── repository/         # Repositorios JPA
+│   │   │           │   └── ProveedorRepository.java
+│   │   │           ├── service/            # Lógica de negocio
+│   │   │           │   └── ProveedorService.java
+│   │   │           ├── security/           # Configuración de seguridad y JWT
+│   │   │           │   ├── JwtUtil.java
+│   │   │           │   ├── SecurityConfig.java
+│   │   │           │   └── AuthController.java
+│   │   │           ├── dto/                # Data Transfer Objects (opcional)
+│   │   │           │   └── ProveedorDTO.java
+│   │   │           ├── exception/          # Manejo de excepciones (opcional)
+│   │   │           │   └── GlobalExceptionHandler.java
+│   │   │           ├── Telastech360Application.java  # Clase principal
+│   │   │           └── config/             # Configuración general (opcional)
+│   │   │               └── AppConfig.java
+│   │   └── resources/
+│   │       ├── application.properties      # Configuración de Spring Boot
+│   │       ├── application.yml             # Alternativa a application.properties
+│   │       ├── data.sql                    # Datos iniciales (opcional)
+│   │       ├── schema.sql                  # Script de esquema SQL (opcional)
+│   │       └── static/                     # Archivos estáticos (CSS, JS)
+│   │           └── index.html
+│   └── test/                               # Pruebas unitarias y de integración
+│       ├── java/
+│       │   └── com/
+│       │       └── telastech360/
+│       │           ├── controller/         # Pruebas de controladores
+│       │           ├── service/            # Pruebas de servicios
+│       │           └── Telastech360ApplicationTests.java
+│       └── resources/
+├── pom.xml                                 # Configuración de Maven
+└── README.md                               # Documentación del proyecto
+Descripción de los directorios principales
+controller/: Contiene las clases que exponen endpoints REST para la interacción con la API. Ejemplo: ProveedorController.
+model/: Contiene las entidades que representan las tablas de la base de datos. Ejemplo: Proveedor.
+repository/: Incluye las interfaces que extienden JpaRepository o CrudRepository para interactuar con la base de datos. Ejemplo: ProveedorRepository.
+service/: Contiene la lógica de negocio. Ejemplo: ProveedorService.
+security/: Maneja la configuración de seguridad de Spring Security, autenticación JWT, y controladores de autenticación.
+dto/: Almacena clases para transferir datos entre la API y el cliente, especialmente si no deseas exponer directamente las entidades.
+exception/: Manejo centralizado de errores y excepciones personalizadas.
+config/: Configuraciones globales, como CORS, beans, o personalización de Spring.
+Extras Opcionales
+data.sql y schema.sql: Para inicializar datos o crear el esquema de la base de datos automáticamente al iniciar la aplicación.
+static/ y templates/: Utilizados si tu aplicación incluye contenido web, como páginas HTML, CSS o JS.
+Si necesitas ayuda para crear la estructura en tu proyecto o configurar algo, ¡avísame! 🚀
